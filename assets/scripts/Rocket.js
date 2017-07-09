@@ -2,6 +2,10 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        atlas:{
+            default: null,
+            type: cc.SpriteAtlas
+        },        
         yAccelerate: false,
         leftAccel: false,
         rightAccel: false,
@@ -11,11 +15,18 @@ cc.Class({
         maxXSpeed: 0,
         currentYSpeed: 0,
         currentXSpeed: 0,
-        gravitation: 0,
-        rocketOn: {
-            default: null,
-            type: cc.SpriteFrame
+        gravitation: 0
+    },
+    
+    showSpriteFrame: function(self, key) {
+        if(key === "rocket_on") {
+            self.node.anchorY = 0.27;
         }
+        else if(key === "rocket_off") {
+            self.node.anchorY = 0;
+        }
+        var sprite = self.node.getComponent(cc.Sprite);
+        sprite.spriteFrame = self.atlas.getSpriteFrame(key);        
     },
     
     setInputControl: function () {
@@ -62,6 +73,8 @@ cc.Class({
         this.currentRightSpeed = 0;
 
         this.setInputControl();
+        
+        this.showSpriteFrame(this, "rocket_off");
     },
     
     yMovement: function(dt) {
@@ -108,5 +121,11 @@ cc.Class({
     update: function (dt) {
         this.yMovement(dt);
         this.xMovement(dt);
+        if(!this.leftAccel && !this.rightAccel && !this.yAccelerate) {
+            this.showSpriteFrame(this, "rocket_off");
+        }
+        else {
+            this.showSpriteFrame(this, "rocket_on");
+        }
     },
 });
