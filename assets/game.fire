@@ -274,12 +274,17 @@
       "__id__": 5
     },
     "_enabled": true,
-    "atlas": {
+    "rocketAtlas": {
       "__uuid__": "d1ef98c3-bfb6-4ac8-83bb-8ac12de37320"
+    },
+    "explosionAtlas": {
+      "__uuid__": "579f0d56-0ba2-4219-aa9d-3394dbf13cab"
     },
     "yAccelerate": false,
     "leftAccel": false,
     "rightAccel": false,
+    "exploding": false,
+    "destroyed": false,
     "ySpeedInc": 50,
     "xSpeedInc": 75,
     "maxYSpeed": 320,

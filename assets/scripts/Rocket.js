@@ -2,13 +2,19 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        atlas:{
+        rocketAtlas:{
+            default: null,
+            type: cc.SpriteAtlas
+        },
+        explosionAtlas:{
             default: null,
             type: cc.SpriteAtlas
         },        
         yAccelerate: false,
         leftAccel: false,
         rightAccel: false,
+        exploding: false,
+        destroyed: false,
         ySpeedInc : 0,
         xSpeedInc : 0,
         maxYSpeed: 0,
@@ -18,15 +24,36 @@ cc.Class({
         gravitation: 0
     },
     
-    showSpriteFrame: function(self, key) {
+    showExplosionFrame: function(sframes, index) {
+        var sprite = this.node.getComponent(cc.Sprite);
+        sprite.spriteFrame = sframes[index];
+        if(index >= sframes.length) {
+            this.destroyed = true;
+            this.exploding = false;
+            return;
+        }
+        else {
+            var self = this;
+            setTimeout(function() {
+                self.showExplosionFrame(sframes, ++index)
+            }, 75);
+        }
+    },
+    
+    showExplosion: function() {
+        var sframes = this.explosionAtlas.getSpriteFrames();
+        this.showExplosionFrame(sframes, 0);
+    },
+    
+    showSpriteFrame: function(key) {
+        var sprite = this.node.getComponent(cc.Sprite);
         if(key === "rocket_on") {
-            self.node.anchorY = 0.27;
+            this.node.anchorY = 0.27;
         }
         else if(key === "rocket_off") {
-            self.node.anchorY = 0;
+            this.node.anchorY = 0;
         }
-        var sprite = self.node.getComponent(cc.Sprite);
-        sprite.spriteFrame = self.atlas.getSpriteFrame(key);        
+        sprite.spriteFrame = this.rocketAtlas.getSpriteFrame(key);
     },
     
     setInputControl: function () {
@@ -68,6 +95,8 @@ cc.Class({
         this.yAccelerate = false;
         this.leftAccel = false;
         this.rightAccel = false;
+        this.destroyed = false;
+        this.exploding = false;
         this.currentYSpeed = 0;
         this.currentLeftSpeed = 0;
         this.currentRightSpeed = 0;
@@ -89,8 +118,13 @@ cc.Class({
             this.node.y += this.currentYSpeed * dt;
         }
         else {
+            cc.log(this.currentYSpeed);
+            if(!this.exploding && Math.abs(this.currentYSpeed) > 50) {
+                this.showExplosion();
+                this.exploding = true;
+            }
             this.currentYSpeed = 0;
-            this.currentXSpeed = 0;
+            this.currentXSpeed = 0;            
         }        
     },
     
@@ -117,15 +151,25 @@ cc.Class({
         }        
     },
 
-    // called every frame, uncomment this function to activate update callback
-    update: function (dt) {
-        this.yMovement(dt);
-        this.xMovement(dt);
-        if(!this.leftAccel && !this.rightAccel && !this.yAccelerate) {
-            this.showSpriteFrame(this, "rocket_off");
+    renderSprite: function() {
+        if(this.exploding) {
+            return;
+        }
+        else if(!this.leftAccel && !this.rightAccel && !this.yAccelerate) {
+            this.showSpriteFrame("rocket_off");
         }
         else {
-            this.showSpriteFrame(this, "rocket_on");
+            this.showSpriteFrame("rocket_on");
+        }        
+    },
+
+    // called every frame, uncomment this function to activate update callback
+    update: function (dt) {
+        if(this.destroyed) {
+            return;
         }
+        this.yMovement(dt);
+        this.xMovement(dt);
+        this.renderSprite();
     },
 });
