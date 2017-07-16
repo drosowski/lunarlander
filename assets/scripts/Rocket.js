@@ -15,6 +15,7 @@ cc.Class({
         rightAccel: false,
         exploding: false,
         destroyed: false,
+        landed: false,
         ySpeedInc : 0,
         xSpeedInc : 0,
         maxYSpeed: 0,
@@ -96,6 +97,7 @@ cc.Class({
         this.leftAccel = false;
         this.rightAccel = false;
         this.destroyed = false;
+        this.landed = false;
         this.exploding = false;
         this.currentYSpeed = 0;
         this.currentLeftSpeed = 0;
@@ -118,10 +120,12 @@ cc.Class({
             this.node.y += this.currentYSpeed * dt;
         }
         else {
-            cc.log(this.currentYSpeed);
             if(!this.exploding && Math.abs(this.currentYSpeed) > 50) {
                 this.showExplosion();
                 this.exploding = true;
+            }
+            else {
+                this.landed = true;
             }
             this.currentYSpeed = 0;
             this.currentXSpeed = 0;            
