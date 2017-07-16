@@ -166,7 +166,7 @@ cc.Class({
     // called every frame, uncomment this function to activate update callback
     update: function (dt) {
         if(this.destroyed) {
-            return;
+            cc.director.loadScene("intro");
         }
         this.yMovement(dt);
         this.xMovement(dt);
