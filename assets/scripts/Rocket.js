@@ -42,6 +42,7 @@ cc.Class({
     },
     
     showExplosion: function() {
+        this.exploding = true;
         var sframes = this.explosionAtlas.getSpriteFrames();
         this.showExplosionFrame(sframes, 0);
     },
@@ -120,12 +121,8 @@ cc.Class({
             this.node.y += this.currentYSpeed * dt;
         }
         else {
-            if(!this.exploding && Math.abs(this.currentYSpeed) > 50) {
+            if(!this.exploding) {
                 this.showExplosion();
-                this.exploding = true;
-            }
-            else {
-                this.landed = true;
             }
             this.currentYSpeed = 0;
             this.currentXSpeed = 0;            
@@ -167,13 +164,26 @@ cc.Class({
         }        
     },
 
+    onCollisionEnter: function (other, self) {
+        if(Math.abs(this.currentYSpeed) > 50) {
+            this.showExplosion();
+        }
+        else {
+            this.landed = true;
+        }        
+        this.currentYSpeed = 0;
+        this.currentXSpeed = 0;          
+    },
+    
     // called every frame, uncomment this function to activate update callback
     update: function (dt) {
         if(this.destroyed) {
             cc.director.loadScene("intro");
         }
-        this.yMovement(dt);
-        this.xMovement(dt);
-        this.renderSprite();
-    },
+        if(!this.landed && !this.exploding) {
+            this.yMovement(dt);
+            this.xMovement(dt);
+            this.renderSprite();
+        }
+    } 
 });
