@@ -9,7 +9,7 @@ cc.Class({
         explosionAtlas:{
             default: null,
             type: cc.SpriteAtlas
-        },        
+        },
         yAccelerate: false,
         leftAccel: false,
         rightAccel: false,
@@ -24,7 +24,7 @@ cc.Class({
         currentXSpeed: 0,
         gravitation: 0
     },
-    
+
     showExplosionFrame: function(sframes, index) {
         var sprite = this.node.getComponent(cc.Sprite);
         sprite.spriteFrame = sframes[index];
@@ -40,13 +40,13 @@ cc.Class({
             }, 75);
         }
     },
-    
+
     showExplosion: function() {
         this.exploding = true;
         var sframes = this.explosionAtlas.getSpriteFrames();
         this.showExplosionFrame(sframes, 0);
     },
-    
+
     showSpriteFrame: function(key) {
         var sprite = this.node.getComponent(cc.Sprite);
         if(key === "rocket_on") {
@@ -57,40 +57,39 @@ cc.Class({
         }
         sprite.spriteFrame = this.rocketAtlas.getSpriteFrame(key);
     },
-    
+
     setInputControl: function () {
-        var self = this;
+	var self = this;
         // add keyboard event listener
-        cc.eventManager.addListener({
-            event: cc.EventListener.KEYBOARD,
-            onKeyPressed: function(keyCode, event) {
-                switch(keyCode) {
-                    case cc.KEY.up:
+        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN,
+            function(event) {
+                switch(event.keyCode) {
+                    case cc.macro.KEY.up:
                         self.yAccelerate = true;
                         break;
-                    case cc.KEY.left:
+                    case cc.macro.KEY.left:
                         self.leftAccel = true;
                         break;
-                    case cc.KEY.right:
+                    case cc.macro.KEY.right:
                         self.rightAccel = true;
-                        break;                        
-                }
-            },
-            onKeyReleased: function(keyCode, event) {
-                switch(keyCode) {
-                    case cc.KEY.up:
-                        self.yAccelerate = false;
                         break;
-                    case cc.KEY.left:
-                        self.leftAccel = false;
-                        break;
-                    case cc.KEY.right:
-                        self.rightAccel = false;
-                        break;                        
                 }
+            }, this);
+        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP,
+	function(event) {
+            switch(event.keyCode) {
+            case cc.macro.KEY.up:
+                self.yAccelerate = false;
+                break;
+            case cc.macro.KEY.left:
+                self.leftAccel = false;
+                break;
+            case cc.macro.KEY.right:
+                self.rightAccel = false;
+                break;
             }
-        }, self.node);
-    },    
+	}, this);
+    },
 
     // use this for initialization
     onLoad: function () {
@@ -105,18 +104,18 @@ cc.Class({
         this.currentRightSpeed = 0;
 
         this.setInputControl();
-        
+
         this.showSpriteFrame(this, "rocket_off");
     },
-    
+
     yMovement: function(dt) {
         if(this.yAccelerate && this.currentYSpeed <= this.maxYSpeed) {
             this.currentYSpeed += this.ySpeedInc * dt;
         }
         else if(Math.abs(this.currentYSpeed) <= this.maxYSpeed) {
             this.currentYSpeed -= this.gravitation * dt;
-        }      
-        
+        }
+
         if(this.currentYSpeed > 0 || (cc.Canvas.instance.designResolution.height / 2 + this.node.y) > 0) {
             this.node.y += this.currentYSpeed * dt;
         }
@@ -125,10 +124,10 @@ cc.Class({
                 this.showExplosion();
             }
             this.currentYSpeed = 0;
-            this.currentXSpeed = 0;            
-        }        
+            this.currentXSpeed = 0;
+        }
     },
-    
+
     xMovement: function(dt) {
         if(this.rightAccel && Math.abs(this.currentXSpeed) <= this.maxXSpeed) {
             this.currentXSpeed += this.xSpeedInc * dt;
@@ -136,8 +135,8 @@ cc.Class({
         else if(this.leftAccel && Math.abs(this.currentXSpeed) <= this.maxXSpeed) {
             this.currentXSpeed -= this.xSpeedInc * dt;
         }
-        
-        
+
+
         if(this.currentXSpeed !== 0) {
             this.node.x += this.currentXSpeed * dt;
         }
@@ -149,7 +148,7 @@ cc.Class({
             else {
                 this.node.x += 1;
             }
-        }        
+        }
     },
 
     renderSprite: function() {
@@ -161,7 +160,7 @@ cc.Class({
         }
         else {
             this.showSpriteFrame("rocket_on");
-        }        
+        }
     },
 
     onCollisionEnter: function (other, self) {
@@ -170,11 +169,11 @@ cc.Class({
         }
         else {
             this.landed = true;
-        }        
+        }
         this.currentYSpeed = 0;
-        this.currentXSpeed = 0;          
+        this.currentXSpeed = 0;
     },
-    
+
     // called every frame, uncomment this function to activate update callback
     update: function (dt) {
         if(this.destroyed) {
@@ -185,5 +184,5 @@ cc.Class({
             this.xMovement(dt);
             this.renderSprite();
         }
-    } 
+    }
 });

@@ -16,8 +16,8 @@ cc.Class({
         },
         count: 0
     },
-    
-    increaseCounter: function() { 
+
+    increaseCounter: function() {
             self.count++;
             var countText;
             if(self.count < 10) {
@@ -28,10 +28,10 @@ cc.Class({
                 if(self.count%10 === 0) {
                     countText += '.0';
                 }
-            }            
+            }
             this.string = '0:0' + countText;
     },
-    
+
     spawnPlatform: function() {
         var platform = cc.instantiate(this.platformPrefab);
         this.node.addChild(platform);
@@ -42,18 +42,18 @@ cc.Class({
         var randX = 0;
         var maxX = this.node.width/2 - platform.width;
         var minX = -(this.node.width/2) + platform.width;
-        randX = cc.randomMinus1To1() * maxX;
+        randX = (Math.random() - 0.5) * 2 * maxX;
         if(randX < minX) {
             randX += platform.width;
         }
-        return cc.p(randX, -(this.node.height/2));
-    },  
-    
+        return cc.v2(randX, -(this.node.height/2));
+    },
+
     enableCollider: function() {
         var manager = cc.director.getCollisionManager();
         manager.enabled = true;
         //manager.enabledDebugDraw = true;
-        //manager.enabledDrawBoundingBox = true;        
+        //manager.enabledDrawBoundingBox = true;
     },
 
     // use this for initialization
@@ -62,14 +62,14 @@ cc.Class({
         this.enableCollider();
         this.rocket.zIndex = 1;
         this.spawnPlatform();
-        
+
         this.count = 0;
-        this.counter.schedule(function() { 
+        this.counter.schedule(function() {
             self.count++;
             var countText = '';
             if(self.count < 100) {
                 countText = '0';
-            }            
+            }
             if(self.count < 10) {
                 countText = countText + '0.' + self.count;
             }
@@ -78,7 +78,7 @@ cc.Class({
                 if(self.count%10 === 0) {
                     countText += '.0';
                 }
-            }            
+            }
             this.string = countText;
         }, 0.1);
     },

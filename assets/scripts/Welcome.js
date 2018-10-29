@@ -16,15 +16,10 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-        var self = this;
-        cc.eventManager.addListener({
-            event: cc.EventListener.KEYBOARD,
-            // When there is a key being pressed down, judge if it's the designated directional button and set up acceleration in the corresponding direction
-            onKeyPressed: function(keyCode, event) {
+        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, function(event) {
                 cc.log("loading game scene");
                 cc.director.loadScene("game");
-            }
-        }, self.node);
+        }, this);
     },
 
     // called every frame, uncomment this function to activate update callback
